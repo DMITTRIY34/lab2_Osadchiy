@@ -1,6 +1,10 @@
 #include "Pipe.h"
-#include <vector>
+#include "Utils.h"
+#include <unordered_map>
 #include <algorithm>
+
+using namespace std;
+
 
 int Pipe::nextId = 1;
 
@@ -13,124 +17,133 @@ Pipe::Pipe() {
 }
 
 void Pipe::show() const {
-    std::cout << "Труба ID: " << id << std::endl;
-    std::cout << "  Название: " << name << std::endl;
-    std::cout << "  Длина: " << length << " км" << std::endl;
-    std::cout << "  Диаметр: " << diameter << " мм" << std::endl;
-    std::cout << "  В ремонте: " << (inRepair ? "Да" : "Нет") << std::endl;
-    std::cout << "------------------------" << std::endl;
+    cout << "Труба ID: " << id << endl;
+    cout << "  Название: " << name << endl;
+    cout << "  Длина: " << length << " км" << endl;
+    cout << "  Диаметр: " << diameter << " мм" << endl;
+    cout << "  В ремонте: " << (inRepair ? "Да" : "Нет") << endl;
+    cout << "------------------------" << endl;
 }
 
-// Функции ввода (объявим здесь, определим в utils)
-int inputInt();
-double inputDouble();
-bool inputBool();
 
-void addPipe(std::vector<Pipe>& pipes) {
+void addPipe(unordered_map<int, Pipe>& pipes) {
     Pipe newPipe;
-    std::cout << "Введите название трубы: ";
-    std::getline(std::cin, newPipe.name);
-    std::cout << "Введите длину трубы (км): ";
-    newPipe.length = inputDouble();
-    std::cout << "Введите диаметр трубы (мм): ";
+    cout << "Введите название трубы: ";
+    getline(cin, newPipe.name);
+    cout << "Введите длину трубы (км): ";
+    newPipe.length = inputFloat();
+    cout << "Введите диаметр трубы (мм): ";
     newPipe.diameter = inputInt();
-    std::cout << "Труба в ремонте? (1-да, 0-нет): ";
-    newPipe.inRepair = inputBool();
+    cout << "Труба в ремонте? (1-да, 0-нет): ";
+    int repair;
+    while (true) {
+        cin >> repair;
+        if (cin.fail() or (repair != 0 and repair != 1)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Вы ввели некорректные данные. Попробуйте ещё раз!" << endl;
+            cout << "Труба в ремонте? (1 если да и 0 если не в ремонте): ";
+        }
+        else {
+            newPipe.inRepair = repair;
+            break;
+        }
+    }
 
-    pipes.push_back(newPipe);
-    std::cout << "Труба добавлена! ID: " << newPipe.id << std::endl;
+    pipes[newPipe.id]= newPipe;
+    cout << "Труба добавлена! ID: " << newPipe.id << endl;
 }
 
-void showAllPipes(const std::vector<Pipe>& pipes) {
-    if (pipes.empty()) {
-        std::cout << "Трубы не найдены!" << std::endl;
-        return;
-    }
-    for (const auto& pipe : pipes) {
-        pipe.show();
-    }
-}
-
-void searchPipes(const std::vector<Pipe>& pipes) {
-    std::cout << "Поиск труб:" << std::endl;
-    std::cout << "1. По названию" << std::endl;
-    std::cout << "2. По статусу ремонта" << std::endl;
-    std::cout << "Выберите вариант: ";
-
-    int choice = inputInt();
-
-    if (choice == 1) {
-        std::cout << "Введите название для поиска: ";
-        std::string searchName;
-        std::getline(std::cin, searchName);
-
-        bool found = false;
-        for (const auto& pipe : pipes) {
-            if (pipe.name.find(searchName) != std::string::npos) {
-                pipe.show();
-                found = true;
-            }
-        }
-        if (!found) {
-            std::cout << "Трубы не найдены!" << std::endl;
-        }
-    }
-    else if (choice == 2) {
-        std::cout << "Искать трубы в ремонте? (1-да, 0-нет): ";
-        bool searchStatus = inputBool();
-
-        bool found = false;
-        for (const auto& pipe : pipes) {
-            if (pipe.inRepair == searchStatus) {
-                pipe.show();
-                found = true;
-            }
-        }
-        if (!found) {
-            std::cout << "Трубы не найдены!" << std::endl;
-        }
-    }
-}
-
-void batchEditPipes(std::vector<Pipe>& pipes) {
-    std::cout << "Пакетное редактирование труб:" << std::endl;
-    std::cout << "1. Редактировать все трубы" << std::endl;
-    std::cout << "2. Выбрать трубы для редактирования" << std::endl;
-    std::cout << "Выберите вариант: ";
-
-    int choice = inputInt();
-    std::vector<int> selectedIds;
-
-    if (choice == 1) {
-        // Выбираем все трубы
-        for (const auto& pipe : pipes) {
-            selectedIds.push_back(pipe.id);
-        }
-    }
-    else if (choice == 2) {
-        std::cout << "Введите ID труб через пробел (0 для завершения): ";
-        int id;
-        while (std::cin >> id && id != 0) {
-            selectedIds.push_back(id);
-        }
-        std::cin.ignore(10000, '\n');
-    }
-
-    if (selectedIds.empty()) {
-        std::cout << "Нет выбранных труб!" << std::endl;
-        return;
-    }
-
-    std::cout << "Новый статус ремонта (1-в ремонте, 0-работает): ";
-    bool newStatus = inputBool();
-
-    int count = 0;
-    for (auto& pipe : pipes) {
-        if (std::find(selectedIds.begin(), selectedIds.end(), pipe.id) != selectedIds.end()) {
-            pipe.inRepair = newStatus;
-            count++;
-        }
-    }
-
-    std::cout << "Изменено " << count << " труб" << std::endl;
-}
+//void showAllPipes(const vector<Pipe>& pipes) {
+//    if (pipes.empty()) {
+//        cout << "Трубы не найдены!" << endl;
+//        return;
+//    }
+//    for (const auto& pipe : pipes) {
+//        pipe.show();
+//    }
+//}
+//
+//void searchPipes(const vector<Pipe>& pipes) {
+//    cout << "Поиск труб:" << endl;
+//    cout << "1. По названию" << endl;
+//    cout << "2. По статусу ремонта" << endl;
+//    cout << "Выберите вариант: ";
+//
+//    int choice = inputInt();
+//
+//    if (choice == 1) {
+//        cout << "Введите название для поиска: ";
+//        string searchName;
+//        getline(cin, searchName);
+//
+//        bool found = false;
+//        for (const auto& pipe : pipes) {
+//            if (pipe.name.find(searchName) != string::npos) {
+//                pipe.show();
+//                found = true;
+//            }
+//        }
+//        if (!found) {
+//            cout << "Трубы не найдены!" << endl;
+//        }
+//    }
+//    else if (choice == 2) {
+//        cout << "Искать трубы в ремонте? (1-да, 0-нет): ";
+//        bool searchStatus = inputBool();
+//
+//        bool found = false;
+//        for (const auto& pipe : pipes) {
+//            if (pipe.inRepair == searchStatus) {
+//                pipe.show();
+//                found = true;
+//            }
+//        }
+//        if (!found) {
+//            cout << "Трубы не найдены!" << endl;
+//        }
+//    }
+//}
+//
+//void batchEditPipes(vector<Pipe>& pipes) {
+//    cout << "Пакетное редактирование труб:" << endl;
+//    cout << "1. Редактировать все трубы" << endl;
+//    cout << "2. Выбрать трубы для редактирования" << endl;
+//    cout << "Выберите вариант: ";
+//
+//    int choice = inputInt();
+//    vector<int> selectedIds;
+//
+//    if (choice == 1) {
+//        // Выбираем все трубы
+//        for (const auto& pipe : pipes) {
+//            selectedIds.push_back(pipe.id);
+//        }
+//    }
+//    else if (choice == 2) {
+//        cout << "Введите ID труб через пробел (0 для завершения): ";
+//        int id;
+//        while (cin >> id && id != 0) {
+//            selectedIds.push_back(id);
+//        }
+//        cin.ignore(10000, '\n');
+//    }
+//
+//    if (selectedIds.empty()) {
+//        cout << "Нет выбранных труб!" << endl;
+//        return;
+//    }
+//
+//    cout << "Новый статус ремонта (1-в ремонте, 0-работает): ";
+//    bool newStatus = inputBool();
+//
+//    int count = 0;
+//    for (auto& pipe : pipes) {
+//        if (find(selectedIds.begin(), selectedIds.end(), pipe.id) != selectedIds.end()) {
+//            pipe.inRepair = newStatus;
+//            count++;
+//        }
+//    }
+//
+//    cout << "Изменено " << count << " труб" << endl;
+//}

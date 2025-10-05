@@ -1,5 +1,8 @@
 #include "KS.h"
-#include <vector>
+#include "Utils.h"
+#include <unordered_map>
+
+using namespace std;
 
 int KS::nextId = 1;
 
@@ -8,16 +11,18 @@ KS::KS() {
     name = "";
     countWorkshop = 0;
     countWorkshopInWork = 0;
+    other = "";
 }
 
 void KS::show() const {
     double unusedPercent = getUnusedPercent();
-    std::cout << "КС ID: " << id << std::endl;
-    std::cout << "  Название: " << name << std::endl;
-    std::cout << "  Цехов всего: " << countWorkshop << std::endl;
-    std::cout << "  Цехов работает: " << countWorkshopInWork << std::endl;
-    std::cout << "  Незадействовано: " << unusedPercent << "%" << std::endl;
-    std::cout << "------------------------" << std::endl;
+    cout << "КС ID: " << id << endl;
+    cout << "  Название: " << name << endl;
+    cout << "  Цехов всего: " << countWorkshop << endl;
+    cout << "  Цехов работает: " << countWorkshopInWork << endl;
+    cout << "  Незадействовано: " << unusedPercent << "%" << endl;
+    cout << "  Класс станции: " << other << endl;
+    cout << "------------------------" << endl;
 }
 
 double KS::getUnusedPercent() const {
@@ -25,76 +30,75 @@ double KS::getUnusedPercent() const {
     return ((countWorkshop - countWorkshopInWork) * 100.0) / countWorkshop;
 }
 
-// Функции ввода (объявим здесь, определим в utils)
-int inputInt();
-double inputDouble();
-
-void addKS(std::vector<KS>& kss) {
+void addKS(unordered_map<int, KS>& kss) {
     KS newKS;
-    std::cout << "Введите название КС: ";
-    std::getline(std::cin, newKS.name);
-    std::cout << "Введите общее количество цехов: ";
-    newKS.totalWorkshops = inputInt();
-    std::cout << "Введите количество работающих цехов: ";
-    newKS.workingWorkshops = inputInt();
+    cout << "Введите название КС: ";
+    getline(cin, newKS.name);
+    cout << "Введите общее количество цехов: ";
+    newKS.countWorkshop = inputInt();
+    cout << "Введите количество работающих цехов: ";
+    newKS.countWorkshopInWork = inputInt();
 
-    while (newKS.workingWorkshops > newKS.totalWorkshops) {
-        std::cout << "Ошибка! Работающих цехов не может быть больше общего количества!" << std::endl;
-        std::cout << "Введите количество работающих цехов: ";
-        newKS.workingWorkshops = inputInt();
+    while (newKS.countWorkshopInWork > newKS.countWorkshop) {
+        cout << "Ошибка! Работающих цехов не может быть больше общего количества!" << endl;
+        cout << "Введите количество работающих цехов: ";
+        newKS.countWorkshopInWork = inputInt();
     }
 
-    kss.push_back(newKS);
-    std::cout << "КС добавлена! ID: " << newKS.id << std::endl;
+    cout << "Введите класс стацнии: ";
+    cin >> newKS.other;
+
+    kss[newKS.id] = newKS;
+    cout << "КС добавлена! ID: " << newKS.id << endl;
 }
 
-void showAllKS(const std::vector<KS>& kss) {
-    if (kss.empty()) {
-        std::cout << "КС не найдены!" << std::endl;
-        return;
-    }
-    for (const auto& ks : kss) {
-        ks.show();
-    }
-}
-
-void searchKS(const std::vector<KS>& kss) {
-    std::cout << "Поиск КС:" << std::endl;
-    std::cout << "1. По названию" << std::endl;
-    std::cout << "2. По проценту незадействованных цехов" << std::endl;
-    std::cout << "Выберите вариант: ";
-
-    int choice = inputInt();
-
-    if (choice == 1) {
-        std::cout << "Введите название для поиска: ";
-        std::string searchName;
-        std::getline(std::cin, searchName);
-
-        bool found = false;
-        for (const auto& ks : kss) {
-            if (ks.name.find(searchName) != std::string::npos) {
-                ks.show();
-                found = true;
-            }
-        }
-        if (!found) {
-            std::cout << "КС не найдены!" << std::endl;
-        }
-    }
-    else if (choice == 2) {
-        std::cout << "Введите минимальный процент незадействованных цехов: ";
-        double minPercent = inputDouble();
-
-        bool found = false;
-        for (const auto& ks : kss) {
-            if (ks.getUnusedPercent() >= minPercent) {
-                ks.show();
-                found = true;
-            }
-        }
-        if (!found) {
-            std::cout << "КС не найдены!" << std::endl;
-        }
-    }
-}
+//void showAllKS(const vector<KS>& kss) {
+//    if (kss.empty()) {
+//        cout << "КС не найдены!" << endl;
+//        return;
+//    }
+//    for (const auto& ks : kss) {
+//        ks.show();
+//    }
+//}
+//
+//void searchKS(const vector<KS>& kss) {
+//    cout << "Поиск КС:" << endl;
+//    cout << "1. По названию" << endl;
+//    cout << "2. По проценту незадействованных цехов" << endl;
+//    cout << "Выберите вариант: ";
+//
+//    int choice = inputInt();
+//
+//    if (choice == 1) {
+//        cout << "Введите название для поиска: ";
+//        string searchName;
+//        getline(cin, searchName);
+//
+//        bool found = false;
+//        for (const auto& ks : kss) {
+//            if (ks.name.find(searchName) != string::npos) {
+//                ks.show();
+//                found = true;
+//            }
+//        }
+//        if (!found) {
+//            cout << "КС не найдены!" << endl;
+//        }
+//    }
+//    else if (choice == 2) {
+//        cout << "Введите минимальный процент незадействованных цехов: ";
+//        float minPercent = inputFloat();
+//
+//        bool found = false;
+//        for (const auto& ks : kss) {
+//            if (ks.getUnusedPercent() >= minPercent) {
+//                ks.show();
+//                found = true;
+//            }
+//        }
+//        if (!found) {
+//            cout << "КС не найдены!" << endl;
+//        }
+//    }
+//}

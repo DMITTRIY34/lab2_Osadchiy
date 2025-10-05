@@ -1,12 +1,14 @@
 #pragma once
-#pragma once
 #include <iostream>
+#include <unordered_map>
 #include <string>
+
+using namespace std;
 
 class Pipe {
 public:
     int id;
-    std::string name;
+    string name;
     double length;
     int diameter;
     bool inRepair;
@@ -18,8 +20,8 @@ public:
 };
 
 // Функции для работы с трубами
-void addPipe(std::vector<Pipe>& pipes);
-void showAllPipes(const std::vector<Pipe>& pipes);
-void searchPipes(const std::vector<Pipe>& pipes);
-void batchEditPipes(std::vector<Pipe>& pipes);
+void addPipe(unordered_map<int, Pipe>& pipes);
+//void showAllPipes(const unordered_map<int, Pipe>& pipes);
+//void searchPipes(const unordered_map<int, Pipe>& pipes);
+//void batchEditPipes(unordered_map<int, Pipe>& pipes);
 
