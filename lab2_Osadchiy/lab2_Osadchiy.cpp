@@ -6,11 +6,12 @@
 #include "Pipe.h"
 #include "Ks.h"
 #include "Utils.h"
+#include <unordered_map>
 
 using namespace std;
 
 
-void menu(vector<Pipe>& pipes, vector<KS>& kss) {
+void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
     bool pipe_existence = false;
     bool ks_existence = false;
     int number;
@@ -33,73 +34,39 @@ void menu(vector<Pipe>& pipes, vector<KS>& kss) {
         switch (number) {
         case 1:
         {
-            addPipe(pipe);
-            pipe_existence = true;
-            cout << endl;
-            cout << "Труба '" << pipe.name << "' была успешно добавлена!\n" << endl;
-            break;
+
         }
         case 2:
         {
-            addKs(ks);
-            ks_existence = true;
-            cout << endl;
-            cout << "Компрессорная станция '" << ks.name << "' была успешно добавлена!\n" << endl;
-            break;
+
         }
         case 3:
         {
-            showAll(pipe, ks);
-            break;
+
         }
         case 4:
         {
-            if (pipe_existence) {
-                changePipe(pipe);
-            }
-            else {
-                cout << "У вас не создана труба!\n" << endl;
-            }
-            break;
+
         }
         case 5:
         {
-            if (ks_existence) {
-                changeKs(ks);
-            }
-            else {
-                cout << "У вас не создана КС!\n" << endl;
-            }
-            break;
+
         }
         case 6:
         {
-            if (pipe_existence or ks_existence) {
-                saveToFile(pipe, ks);
-            }
-            else {
-                cout << "Нет данных для сохранения!\n" << endl;
-            }
-            break;
+
         }
         case 7:
         {
-            if (loadFromFile(pipe, ks)) {
-                pipe_existence = (pipe.diameter > 0);
-                ks_existence = (ks.countWorkshop > 0);
-                cout << "Данные загружены успешно!\n" << endl;
-            }
-            break;
+
         }
         case 8:
         {
-            cout << "Выход из программы!\n";
-            return;
+
         }
         case 9:
         {
-            cout << "Выход из программы!\n";
-            return;
+
         }
         case 10:
         {
@@ -118,8 +85,8 @@ int main()
     system("chcp 1251 > nul");
     setlocale(LC_ALL, "Russian");
 
-    vector<Pipe> pipes;
-    vector<KS> kss;
+    unordered_map<int,Pipe> pipes;
+    unordered_map<int, KS> kss;
     menu(pipes, kss);
 
     return 0;

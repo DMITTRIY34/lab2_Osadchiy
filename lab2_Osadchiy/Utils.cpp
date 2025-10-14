@@ -1,44 +1,11 @@
 #include "utils.h"
 #include "Pipe.h"
 #include "KS.h"
-#include <vector>
+#include <unordered_map>
 #include <fstream>
 
+
 using namespace std;
-
-int inputInt() {
-    int value;
-    while (true) {
-        std::cin >> value;
-
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Ошибка ввода! Попробуйте снова: ";
-            continue;
-        }
-
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return value;
-    }
-}
-
-float inputFloat() {
-    float value;
-    while (true) {
-        std::cin >> value;
-
-        if (std::cin.fail() || value <= 0) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Ошибка! Введите корректное значение: ";
-            continue;
-        }
-
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return value;
-    }
-}
 
 
 //void saveToFile(const std::vector<Pipe>& pipes, const std::vector<KS>& kss) {

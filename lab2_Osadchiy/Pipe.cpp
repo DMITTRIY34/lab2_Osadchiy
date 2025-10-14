@@ -2,6 +2,8 @@
 #include "Utils.h"
 #include <unordered_map>
 #include <algorithm>
+#include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -25,33 +27,57 @@ void Pipe::show() const {
     cout << "------------------------" << endl;
 }
 
+ostream& operator<<(ostream& out, const Pipe& pipe)
+{
+    cout << endl;
+    cout << "------------------------" << endl;
+    cout << "Труба ID: " << pipe.id << endl;
+    cout << "Название: " << pipe.name << std::endl;
+    cout << "Длина: " << pipe.length << " км" << std::endl;
+    cout << "Диаметр: " << pipe.diameter << " мм" << std::endl;
+    cout << "В ремонте: " << (pipe.inRepair ? "Да" : "Нет") << std::endl;
+    cout << "------------------------" << endl;
+    return out;
+}
+
+istream& operator>>(istream& in, Pipe& pipe) {
+    cout << "Введите название Трубы: ";
+    pipe.name = GetName();
+    cout << "Введите длину трубы в км: ";
+    pipe.length = GetNumber(0.01);
+    cout << "Введите диаметр трубы в мм: ";
+    pipe.diameter = GetNumber(1);
+    cout << "Труба в ремонте (1 - ДА | 0 - НЕТ): ";
+    pipe.inRepair = GetNumber(0,1);
+
+    return in;
+}
+
+ofstream& operator<<(ofstream& out, const Pipe& pipe) {
+    out << "PIPE" << endl;
+    out << pipe.id << endl;
+    out << pipe.name << endl;
+    out << pipe.length << endl;
+    out << pipe.diameter << endl;
+    out << pipe.inRepair << endl;
+    return out;
+}
+
+ifstream& operator>>(ifstream& in, Pipe& pipe) {
+    in >> pipe.id;
+    in.ignore();
+    getline(in, pipe.name);
+    in >> pipe.length >> pipe.diameter >> pipe.inRepair;
+    in.ignore();
+    return in;
+}
 
 void addPipe(unordered_map<int, Pipe>& pipes) {
     Pipe newPipe;
-    cout << "Введите название трубы: ";
-    getline(cin, newPipe.name);
-    cout << "Введите длину трубы (км): ";
-    newPipe.length = inputFloat();
-    cout << "Введите диаметр трубы (мм): ";
-    newPipe.diameter = inputInt();
-    cout << "Труба в ремонте? (1-да, 0-нет): ";
-    int repair;
-    while (true) {
-        cin >> repair;
-        if (cin.fail() or (repair != 0 and repair != 1)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Вы ввели некорректные данные. Попробуйте ещё раз!" << endl;
-            cout << "Труба в ремонте? (1 если да и 0 если не в ремонте): ";
-        }
-        else {
-            newPipe.inRepair = repair;
-            break;
-        }
-    }
-
-    pipes[newPipe.id]= newPipe;
+    cin >> newPipe;
+    pipes[newPipe.id] = newPipe;
     cout << "Труба добавлена! ID: " << newPipe.id << endl;
+    
 }
 
 //void showAllPipes(const vector<Pipe>& pipes) {
