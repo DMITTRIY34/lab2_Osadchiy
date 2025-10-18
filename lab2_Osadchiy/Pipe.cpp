@@ -8,17 +8,19 @@
 using namespace std;
 
 
-int Pipe::nextId = 1;
+int Pipe::nextId = 0;
 
 Pipe::Pipe() {
-    id = nextId++;
+    //id = nextId++;   
     name = "";
     length = 0;
     diameter = 0;
     inRepair = false;
 }
 
+
 void Pipe::show() const {
+    cout << "------------------------" << endl;
     cout << "Труба ID: " << id << endl;
     cout << "  Название: " << name << endl;
     cout << "  Длина: " << length << " км" << endl;
@@ -75,101 +77,120 @@ ifstream& operator>>(ifstream& in, Pipe& pipe) {
 void addPipe(unordered_map<int, Pipe>& pipes) {
     Pipe newPipe;
     cin >> newPipe;
-    pipes[newPipe.id] = newPipe;
-    cout << "Труба добавлена! ID: " << newPipe.id << endl;
+    pipes[newPipe.getId()] = newPipe;
+    cout << "Труба добавлена! ID: " << newPipe.getId() << endl;
     
 }
 
-//void showAllPipes(const vector<Pipe>& pipes) {
-//    if (pipes.empty()) {
-//        cout << "Трубы не найдены!" << endl;
-//        return;
-//    }
-//    for (const auto& pipe : pipes) {
-//        pipe.show();
-//    }
-//}
-//
-//void searchPipes(const vector<Pipe>& pipes) {
-//    cout << "Поиск труб:" << endl;
-//    cout << "1. По названию" << endl;
-//    cout << "2. По статусу ремонта" << endl;
-//    cout << "Выберите вариант: ";
-//
-//    int choice = inputInt();
-//
-//    if (choice == 1) {
-//        cout << "Введите название для поиска: ";
-//        string searchName;
-//        getline(cin, searchName);
-//
-//        bool found = false;
-//        for (const auto& pipe : pipes) {
-//            if (pipe.name.find(searchName) != string::npos) {
-//                pipe.show();
-//                found = true;
-//            }
-//        }
-//        if (!found) {
-//            cout << "Трубы не найдены!" << endl;
-//        }
-//    }
-//    else if (choice == 2) {
-//        cout << "Искать трубы в ремонте? (1-да, 0-нет): ";
-//        bool searchStatus = inputBool();
-//
-//        bool found = false;
-//        for (const auto& pipe : pipes) {
-//            if (pipe.inRepair == searchStatus) {
-//                pipe.show();
-//                found = true;
-//            }
-//        }
-//        if (!found) {
-//            cout << "Трубы не найдены!" << endl;
-//        }
-//    }
-//}
-//
-//void batchEditPipes(vector<Pipe>& pipes) {
-//    cout << "Пакетное редактирование труб:" << endl;
-//    cout << "1. Редактировать все трубы" << endl;
-//    cout << "2. Выбрать трубы для редактирования" << endl;
-//    cout << "Выберите вариант: ";
-//
-//    int choice = inputInt();
-//    vector<int> selectedIds;
-//
-//    if (choice == 1) {
-//        // Выбираем все трубы
-//        for (const auto& pipe : pipes) {
-//            selectedIds.push_back(pipe.id);
-//        }
-//    }
-//    else if (choice == 2) {
-//        cout << "Введите ID труб через пробел (0 для завершения): ";
-//        int id;
-//        while (cin >> id && id != 0) {
-//            selectedIds.push_back(id);
-//        }
-//        cin.ignore(10000, '\n');
-//    }
-//
-//    if (selectedIds.empty()) {
-//        cout << "Нет выбранных труб!" << endl;
-//        return;
-//    }
-//
-//    cout << "Новый статус ремонта (1-в ремонте, 0-работает): ";
-//    bool newStatus = inputBool();
-//
-//    int count = 0;
-//    for (auto& pipe : pipes) {
-//        if (find(selectedIds.begin(), selectedIds.end(), pipe.id) != selectedIds.end()) {
-//            pipe.inRepair = newStatus;
-//            count++;
-//        }
-//    }
-//
-//    cout << "Изменено " << count << " труб" << endl;
-//}
+void showAllPipes(const unordered_map<int, Pipe>& pipes) {
+    if (pipes.empty()) {
+        cout << "Трубы не найдены!" << endl;
+        return;
+    }
+    for (const auto& item : pipes) {
+        item.second.show();
+    }
+}
+
+void searchPipes(const unordered_map<int, Pipe>& pipes) {
+    cout << "Поиск труб:" << endl;
+    cout << "1. По названию" << endl;
+    cout << "2. По статусу ремонта" << endl;
+    cout << "Выберите вариант: ";
+
+    int choice = GetNumber(1,2);
+    string searchName;
+    string searchStatus;
+    bool found;
+    switch (choice) {
+    case 1:
+        cout << "Введите название для поиска: ";
+        searchName = GetName();
+
+        found = false;
+        for (const auto& item : pipes) {
+            if (item.second.getName().find(searchName) != string::npos) {
+                item.second.show();
+                found = true;
+            }
+        }
+        if (!found) {
+            cout << "Трубы не найдены!" << endl;
+        }
+        break;
+    case 2:
+        cout << "Искать трубы в ремонте? (1-да, 0-нет): ";
+        bool searchStatus = GetNumber(0,1);
+
+        bool found = false;
+        for (const auto& item : pipes) {
+            if (item.second.isInRepair() == searchStatus) {
+                item.second.show();
+                found = true;
+            }
+        }
+        if (!found) {
+            cout << "Трубы не найдены!" << endl;
+        }
+        break;
+    }
+}
+
+void batchEditPipes(unordered_map<int, Pipe>& pipes) {
+    unordered_map<int, Pipe> selectedPipes;
+    cout << "Пакетное редактирование труб:" << endl;
+    cout << "1. Редактировать все трубы" << endl;
+    cout << "2. Выбрать трубы для редактирования" << endl;
+    cout << "Выберите вариант: ";
+
+    int choice = GetNumber(1,2);
+
+    if (choice == 1) {
+        selectedPipes = pipes;
+    }
+    else if (choice == 2) {
+        cout << "Фильтр для выбора труб:" << endl;
+        cout << "1. По названию" << endl;
+        cout << "2. По статусу ремонта" << endl;
+        cout << "Выберите вариант: ";
+
+        int filterChoice = GetNumber(1, 2);
+
+        if (filterChoice == 1) {
+            cout << "Введите название для поиска: ";
+            string searchName = GetName();
+            for (const auto& item : pipes) {
+                if (item.second.getName().find(searchName) != string::npos) {
+                    selectedPipes[item.first] = item.second;
+                }
+            }
+        }
+        else if (filterChoice == 2) {
+            cout << "Искать трубы в ремонте? (1-да, 0-нет): ";
+            bool searchStatus = GetNumber(0, 1);
+            for (const auto& item : pipes) {
+                if (item.second.isInRepair() == searchStatus) {
+                    selectedPipes[item.first] = item.second;
+                }
+            }
+        }
+    }
+    if (selectedPipes.empty()) {
+        cout << "Нет выбранных труб!" << endl;
+        return;
+    }
+
+    cout << "Выбрано " << selectedPipes.size() << " труб:" << endl;
+    for (const auto& item : selectedPipes) {
+        cout << item.second;
+    }
+
+    cout << "Новый статус ремонта (1-в ремонте, 0-работает): ";
+    bool newStatus = GetNumber(0, 1);
+
+    for (auto& item : selectedPipes) {
+        pipes[item.first].setRepair(newStatus);
+    }
+
+    cout << "Изменено " << selectedPipes.size() << " труб" << endl;
+}

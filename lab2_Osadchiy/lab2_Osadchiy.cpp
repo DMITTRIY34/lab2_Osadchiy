@@ -12,63 +12,76 @@ using namespace std;
 
 
 void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
-    bool pipe_existence = false;
-    bool ks_existence = false;
     int number;
     while (true)
     {
         cout << "1. Добавить трубу" << endl;
         cout << "2. Добавить КС" << endl;
-        cout << "3. Просмотр всех объектов" << endl;
-        cout << "4. Поиск" << endl;
-        cout << "5. Редактировать трубу" << endl;
-        cout << "6. Редактировать КС" << endl;
-        cout << "7. Сохранить в файл" << endl;
-        cout << "8. Загрузить из файла" << endl;
-        cout << "9. Удалить объект" << endl;
-        cout << "10. Выход" << endl;
+        cout << "3. Просмотр всех труб" << endl;
+        cout << "4. Просмотр всех КС" << endl;
+        cout << "5. Поиск труб" << endl;
+        cout << "6. Поиск КС" << endl;
+        cout << "7. Пакетное редактирование труб" << endl;
+        cout << "8. Удалить объект" << endl;
+        cout << "9. Сохранить в файл" << endl;
+        cout << "10. Загрузить из файла" << endl;
+        cout << "0. Выход" << endl;
         cout << "Выберите действие: ";
 
-        number = inputInt();
+        number = GetNumber(0,10);
         cout << endl;
         switch (number) {
         case 1:
         {
-
+            addPipe(pipes);
+            break;
         }
         case 2:
         {
-
+            addKS(kss);
+            break;
         }
         case 3:
         {
-
+            showAllPipes(pipes);
+            break;
         }
         case 4:
         {
-
+            showAllKS(kss);
+            break;
         }
         case 5:
         {
-
+            searchPipes(pipes);
+            break;
         }
         case 6:
         {
-
+            searchKS(kss);
+            break;
         }
         case 7:
         {
-
+            batchEditPipes(pipes);
+            break;
         }
         case 8:
         {
-
+            deleteObject(pipes, kss);
+            break;
         }
         case 9:
         {
-
+            saveToFile(pipes, kss);
+            break;
         }
         case 10:
+        {
+            loadFromFile(pipes, kss);
+            break;
+        }
+        case 0:
         {
             cout << "Выход из программы!\n";
             return;

@@ -12,6 +12,20 @@ KS::KS() {
     id = nextId++;
 }
 
+
+void KS::show() const {
+    double unusedPercent = getUnusedPercent();
+    cout << endl;
+    cout << "------------------------" << endl;
+    cout << "КС ID: " << id << endl;
+    cout << "Название: " << name << std::endl;
+    cout << "Цехов всего: " << countWorkshop <<endl;
+    cout << "Цехов в работе: " << countWorkshopInWork << std::endl;
+    cout << "Незадействовано: " << unusedPercent << "%" << std::endl;
+    cout << "Класс станции: " << other << endl;
+    cout << "------------------------" << endl;
+}
+
 ostream& operator<<(ostream& out, const KS& ks)
 {
     double unusedPercent = ks.getUnusedPercent();
@@ -20,7 +34,7 @@ ostream& operator<<(ostream& out, const KS& ks)
     cout << "КС ID: " << ks.id << endl;
     cout << "Название: " << ks.name << std::endl;
     cout << "Цехов всего: " << ks.countWorkshop << std::endl;
-    cout << "Number of active workshops: " << ks.countWorkshopInWork << std::endl;
+    cout << "Цехов в работе: " << ks.countWorkshopInWork << std::endl;
     cout << "Незадействовано: " << unusedPercent << "%" << std::endl;
     cout << "Класс станции: " << ks.other << endl;
     cout << "------------------------" << endl;
@@ -69,58 +83,59 @@ double KS::getUnusedPercent() const {
 void addKS(unordered_map<int, KS>& kss) {
     KS newKS;
     cin >> newKS;
-
-    kss[newKS.id] = newKS;
-    cout << "КС добавлена! ID: " << newKS.id << endl;
+    kss[newKS.getId()] = newKS;
+    cout << "КС добавлена! ID: " << newKS.getId() << endl;
 }
 
-//void showAllKS(const vector<KS>& kss) {
-//    if (kss.empty()) {
-//        cout << "КС не найдены!" << endl;
-//        return;
-//    }
-//    for (const auto& ks : kss) {
-//        ks.show();
-//    }
-//}
-//
-//void searchKS(const vector<KS>& kss) {
-//    cout << "Поиск КС:" << endl;
-//    cout << "1. По названию" << endl;
-//    cout << "2. По проценту незадействованных цехов" << endl;
-//    cout << "Выберите вариант: ";
-//
-//    int choice = inputInt();
-//
-//    if (choice == 1) {
-//        cout << "Введите название для поиска: ";
-//        string searchName;
-//        getline(cin, searchName);
-//
-//        bool found = false;
-//        for (const auto& ks : kss) {
-//            if (ks.name.find(searchName) != string::npos) {
-//                ks.show();
-//                found = true;
-//            }
-//        }
-//        if (!found) {
-//            cout << "КС не найдены!" << endl;
-//        }
-//    }
-//    else if (choice == 2) {
-//        cout << "Введите минимальный процент незадействованных цехов: ";
-//        float minPercent = inputFloat();
-//
-//        bool found = false;
-//        for (const auto& ks : kss) {
-//            if (ks.getUnusedPercent() >= minPercent) {
-//                ks.show();
-//                found = true;
-//            }
-//        }
-//        if (!found) {
-//            cout << "КС не найдены!" << endl;
-//        }
-//    }
-//}
+void showAllKS(const unordered_map<int, KS>& kss) {
+    if (kss.empty()) {
+        cout << "КС не найдены!" << endl;
+        return;
+    }
+    for (const auto& item : kss) {
+        item.second.show();
+    }
+}
+
+void searchKS(const unordered_map<int, KS>& kss) {
+    cout << "Поиск КС:" << endl;
+    cout << "1. По названию" << endl;
+    cout << "2. По проценту незадействованных цехов" << endl;
+    cout << "Выберите вариант: ";
+
+    int choice = GetNumber(1,2);
+    string searchName;
+    bool found;
+    switch (choice) {
+    case 1:
+        cout << "Введите название для поиска: ";
+        searchName = GetName();
+
+        found = false;
+        for (const auto& item : kss) {
+            if (item.second.getName().find(searchName) != string::npos) {
+                item.second.show();
+                found = true;
+            }
+        }
+        if (!found) {
+            cout << "КС не найдены!" << endl;
+        }
+        break;
+    case 2:
+        cout << "Введите минимальный процент незадействованных цехов: ";
+        float minPercent = GetNumber(0,100);
+
+        bool found = false;
+        for (const auto& item : kss) {
+            if (item.second.getUnusedPercent() >= minPercent) {
+                item.second.show();
+                found = true;
+            }
+        }
+        if (!found) {
+            cout << "КС не найдены!" << endl;
+        }
+        break;
+    }
+}
