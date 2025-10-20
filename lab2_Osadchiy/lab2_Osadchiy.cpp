@@ -7,9 +7,9 @@
 #include "Ks.h"
 #include "Utils.h"
 #include <unordered_map>
+#include "redirect_output_wrapper.h"
 
 using namespace std;
-
 
 void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
     int number;
@@ -22,13 +22,14 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
         cout << "5. Поиск труб" << endl;
         cout << "6. Поиск КС" << endl;
         cout << "7. Пакетное редактирование труб" << endl;
-        cout << "8. Удалить объект" << endl;
-        cout << "9. Сохранить в файл" << endl;
-        cout << "10. Загрузить из файла" << endl;
+        cout << "8. Редактировать КС" << endl;
+        cout << "9. Удалить объект" << endl;
+        cout << "10. Сохранить в файл" << endl;
+        cout << "11. Загрузить из файла" << endl;
         cout << "0. Выход" << endl;
         cout << "Выберите действие: ";
 
-        number = GetNumber(0,10);
+        number = GetNumber(0,11);
         cout << endl;
         switch (number) {
         case 1:
@@ -68,15 +69,20 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
         }
         case 8:
         {
-            deleteObject(pipes, kss);
+            editKS(kss);
             break;
         }
         case 9:
         {
-            saveToFile(pipes, kss);
+            deleteObject(pipes, kss);
             break;
         }
         case 10:
+        {
+            saveToFile(pipes, kss);
+            break;
+        }
+        case 11:
         {
             loadFromFile(pipes, kss);
             break;
@@ -97,6 +103,13 @@ int main()
 {
     system("chcp 1251 > nul");
     setlocale(LC_ALL, "Russian");
+
+    redirect_output_wrapper cer_out(cin);  
+    ofstream logfile("input_log.txt");
+    if (logfile)
+    {
+        cer_out.redirect(logfile);
+    }
 
     unordered_map<int,Pipe> pipes;
     unordered_map<int, KS> kss;

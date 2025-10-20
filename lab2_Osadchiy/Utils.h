@@ -2,6 +2,8 @@
 #include <iostream>
 #include "Ks.h"
 #include "Pipe.h"
+
+
 using namespace std;
 
 // Функции для ввода данных

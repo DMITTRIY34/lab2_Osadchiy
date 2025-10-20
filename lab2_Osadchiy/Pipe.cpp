@@ -11,7 +11,7 @@ using namespace std;
 int Pipe::nextId = 0;
 
 Pipe::Pipe() {
-    //id = nextId++;   
+    id = nextId++;   
     name = "";
     length = 0;
     diameter = 0;
@@ -56,7 +56,7 @@ istream& operator>>(istream& in, Pipe& pipe) {
 }
 
 ofstream& operator<<(ofstream& out, const Pipe& pipe) {
-    out << "PIPE" << endl;
+    //out << "PIPE" << endl;
     out << pipe.id << endl;
     out << pipe.name << endl;
     out << pipe.length << endl;
@@ -79,7 +79,6 @@ void addPipe(unordered_map<int, Pipe>& pipes) {
     cin >> newPipe;
     pipes[newPipe.getId()] = newPipe;
     cout << "Труба добавлена! ID: " << newPipe.getId() << endl;
-    
 }
 
 void showAllPipes(const unordered_map<int, Pipe>& pipes) {

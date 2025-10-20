@@ -126,11 +126,13 @@
     <ClCompile Include="Ks.cpp" />
     <ClCompile Include="lab2_Osadchiy.cpp" />
     <ClCompile Include="Pipe.cpp" />
+    <ClCompile Include="redirect_output_wrapper.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ks.h" />
     <ClInclude Include="Pipe.h" />
+    <ClInclude Include="redirect_output_wrapper.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

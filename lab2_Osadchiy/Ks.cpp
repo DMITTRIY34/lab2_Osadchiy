@@ -12,7 +12,6 @@ KS::KS() {
     id = nextId++;
 }
 
-
 void KS::show() const {
     double unusedPercent = getUnusedPercent();
     cout << endl;
@@ -55,7 +54,7 @@ istream& operator>>(istream& in, KS& ks) {
 
 ofstream& operator<<(ofstream& out, const KS& ks)
 {
-    out << "KS" << endl;
+    //out << "KS" << endl;
     out << ks.id << endl;
     out << ks.name << endl;
     out << ks.countWorkshop << endl;
@@ -138,4 +137,83 @@ void searchKS(const unordered_map<int, KS>& kss) {
         }
         break;
     }
+}
+
+// Методы для управления цехами
+void KS::startWorkshops(int count) {
+    int available = countWorkshop - countWorkshopInWork;
+    if (count > available) {
+        throw invalid_argument("Нельзя запустить больше " + to_string(available) + " цехов");
+    }
+    countWorkshopInWork += count;
+}
+
+void KS::stopWorkshops(int count) {
+    if (count > countWorkshopInWork) {
+        throw invalid_argument("Нельзя остановить больше " + to_string(countWorkshopInWork) + " цехов");
+    }
+    countWorkshopInWork -= count;
+}
+
+void editKS(unordered_map<int, KS>& kss) {
+    if (kss.empty()) {
+        cout << "Нет доступных КС для редактирования!" << endl;
+        return;
+    }
+
+    cout << "Доступные КС:" << endl;
+    for (const auto& item : kss) {
+        cout << "ID: " << item.first << " - " << item.second.getName() << endl;
+    }
+
+    cout << "Введите ID КС для редактирования: ";
+    int id = GetNumber(0);
+
+    auto it = kss.find(id);
+    if (it == kss.end()) {
+        cout << "КС с ID " << id << " не найдена!" << endl;
+        return;
+    }
+
+    KS& ks = it->second;
+
+    int choice;
+    do {
+        cout << "\n=== Редактирование КС '" << ks.getName() << "' ===" << endl;
+        cout << "1. Запустить цеха" << endl;
+        cout << "2. Остановить цеха" << endl;
+        cout << "0. Вернуться в меню" << endl;
+        cout << "Выберите действие: ";
+
+        choice = GetNumber<int>(0, 2);
+
+        switch (choice) {
+        case 1: {
+            int available = ks.getCountWorkshop() - ks.getCountWorkshopInWork();
+            if (available == 0) {
+                cout << "Все цеха уже работают!" << endl;
+                break;
+            }
+            cout << "Можно запустить до " << available << " цехов: ";
+            int count = GetNumber<int>(1, available);
+            ks.startWorkshops(count);
+            cout << "Запущено " << count << " цехов. Теперь работает: " << ks.getCountWorkshopInWork() << " цехов" << endl;
+            break;
+        }
+        case 2: {
+            if (ks.getCountWorkshopInWork() == 0) {
+                cout << "Нет работающих цехов!" << endl;
+                break;
+            }
+            cout << "Можно остановить до " << ks.getCountWorkshopInWork() << " цехов: ";
+            int count = GetNumber(1, ks.getCountWorkshopInWork());
+            ks.stopWorkshops(count);
+            cout << "Остановлено " << count << " цехов. Теперь работает: " << ks.getCountWorkshopInWork() << " цехов" << endl;
+            break;
+        }
+        case 0:
+            cout << "Выход из редактирования КС" << endl;
+            break;
+        }
+    } while (choice != 0);
 }

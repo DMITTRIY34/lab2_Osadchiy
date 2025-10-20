@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 
-
 using namespace std;
 
 string GetName()
@@ -167,11 +166,3 @@ void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
     }
 }
 
-//void logAction(const std::string& action) {
-//    std::ofstream logfile("log.txt", std::ios::app);
-//    if (logfile.is_open()) {
-//        logfile << action << endl;
-//        logfile.close();
-//    }
-//    cout << "[LOG] " << action << endl;
-//}

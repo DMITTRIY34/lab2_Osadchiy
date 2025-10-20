@@ -23,7 +23,12 @@ public:
     // Геттеры, чтобы получать значение, без доступа
     int getId() const { return id; }
     string getName() const { return name; }
+    int getCountWorkshop() const { return countWorkshop; }
+    int getCountWorkshopInWork() const { return countWorkshopInWork; }
     
+
+    void startWorkshops(int count);
+    void stopWorkshops(int count);
 
     double getUnusedPercent() const;
 
@@ -37,3 +42,4 @@ public:
 void addKS(unordered_map<int, KS>& kss);
 void showAllKS(const unordered_map<int, KS>& kss);
 void searchKS(const unordered_map<int, KS>& kss);
+void editKS(unordered_map<int, KS>& kss);
