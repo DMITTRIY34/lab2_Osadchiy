@@ -17,7 +17,7 @@ N GetNumber(const N left_border = 0, const N right_border = std::numeric_limits<
     while (true)
     {
         cin >> x;
-
+        cout << x;
         // Проверяем успешность ввода и что следующий символ - конец строки
         if (cin.good() && cin.peek() == '\n' && x >= left_border && x <= right_border)
         {
@@ -34,6 +34,7 @@ N GetNumber(const N left_border = 0, const N right_border = std::numeric_limits<
         }
     }
 };
+
 
 string GetName();
 

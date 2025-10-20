@@ -103,6 +103,10 @@ int main()
     system("chcp 1251 > nul");
     setlocale(LC_ALL, "Russian");
 
+    // ПРИНУДИТЕЛЬНЫЙ СБРОС ПОТОКА ВВОДА
+    std::cin.clear(); // Сбрасываем флаги ошибок (включая EOF)
+    std::cin.seekg(0, std::ios::beg); // Перемещаемся в начало потока
+
     Logger::getInstance().init("session.txt");
 
     unordered_map<int,Pipe> pipes;
