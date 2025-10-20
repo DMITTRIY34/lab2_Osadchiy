@@ -4,16 +4,21 @@
 #include <unordered_map>
 #include <fstream>
 #include <string>
+#include "Logger.h"
+
+
 
 using namespace std;
+#define LOG(message) Logger::getInstance().log(message)
 
 string GetName()
 {
     string name;
     while (true)
     {
-        cin.ignore(1000, '\n');
+        //cin.ignore(1000, '\n');
         getline(cin, name);
+        LOG(name);
         if (!name.empty())
         {
             return name;
@@ -23,7 +28,7 @@ string GetName()
             cout << "Неправильный ввод! Введите пожалуйста правильное имя: " << endl;
         }
     }
-    return std::string();
+    return string();
 }
 
 void saveToFile(const unordered_map<int, Pipe>& pipes, const unordered_map<int, KS>& kss) {
@@ -165,4 +170,3 @@ void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
 
     }
 }
-

@@ -8,8 +8,13 @@ using namespace std;
 
 int KS::nextId = 0;
 
+
 KS::KS() {
     id = nextId++;
+    name = "";
+    countWorkshop = 0;
+    countWorkshopInWork = 0;
+    other = "";
 }
 
 void KS::show() const {
@@ -82,7 +87,7 @@ double KS::getUnusedPercent() const {
 void addKS(unordered_map<int, KS>& kss) {
     KS newKS;
     cin >> newKS;
-    kss[newKS.getId()] = newKS;
+    kss.insert({ newKS.getId(), newKS });
     cout << "КС добавлена! ID: " << newKS.getId() << endl;
 }
 

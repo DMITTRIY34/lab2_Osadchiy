@@ -28,6 +28,7 @@ public:
     // Сеттеры
     void setRepair(bool repair) { inRepair = repair; }
 
+
     friend ostream& operator << (ostream& out, const Pipe& pipe);
     friend istream& operator >> (istream& in, Pipe& pipe);
     friend ofstream& operator << (ofstream& out, const Pipe& pipe);

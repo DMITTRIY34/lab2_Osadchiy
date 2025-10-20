@@ -7,7 +7,6 @@
 #include "Ks.h"
 #include "Utils.h"
 #include <unordered_map>
-#include "redirect_output_wrapper.h"
 
 using namespace std;
 
@@ -104,16 +103,11 @@ int main()
     system("chcp 1251 > nul");
     setlocale(LC_ALL, "Russian");
 
-    redirect_output_wrapper cer_out(cin);  
-    ofstream logfile("input_log.txt");
-    if (logfile)
-    {
-        cer_out.redirect(logfile);
-    }
+    Logger::getInstance().init("session.txt");
 
     unordered_map<int,Pipe> pipes;
     unordered_map<int, KS> kss;
-    menu(pipes, kss);
 
+    menu(pipes, kss);
     return 0;
 }

@@ -11,12 +11,13 @@ using namespace std;
 int Pipe::nextId = 0;
 
 Pipe::Pipe() {
-    id = nextId++;   
+    id = nextId++;
     name = "";
     length = 0;
     diameter = 0;
     inRepair = false;
 }
+
 
 
 void Pipe::show() const {
@@ -77,7 +78,7 @@ ifstream& operator>>(ifstream& in, Pipe& pipe) {
 void addPipe(unordered_map<int, Pipe>& pipes) {
     Pipe newPipe;
     cin >> newPipe;
-    pipes[newPipe.getId()] = newPipe;
+    pipes.insert({newPipe.getId(), newPipe});
     cout << "Труба добавлена! ID: " << newPipe.getId() << endl;
 }
 
