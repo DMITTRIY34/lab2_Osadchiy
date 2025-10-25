@@ -79,7 +79,7 @@ void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
     for (int i = 0; i < pipeCount; i++) {
         Pipe pipe;
         file >> pipe;
-        pipes[pipe.getId()] = pipe;
+        pipes.insert({ pipe.getId(),pipe });
     }
 
     // Загружаем КС
@@ -90,7 +90,7 @@ void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
     for (int i = 0; i < ksCount; i++) {
         KS ks;
         file >> ks;
-        kss[ks.getId()] = ks;
+        kss.insert({ ks.getId(),ks });
     }
 
     file.close();

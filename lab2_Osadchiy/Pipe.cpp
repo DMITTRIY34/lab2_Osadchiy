@@ -18,8 +18,6 @@ Pipe::Pipe() {
     inRepair = false;
 }
 
-
-
 void Pipe::show() const {
     cout << "------------------------" << endl;
     cout << "Труба ID: " << id << endl;
@@ -161,7 +159,7 @@ void batchEditPipes(unordered_map<int, Pipe>& pipes) {
             string searchName = GetName();
             for (const auto& item : pipes) {
                 if (item.second.getName().find(searchName) != string::npos) {
-                    selectedPipes[item.first] = item.second;
+                    selectedPipes.insert({ item.first,item.second });
                 }
             }
         }
@@ -170,7 +168,7 @@ void batchEditPipes(unordered_map<int, Pipe>& pipes) {
             bool searchStatus = GetNumber(0, 1);
             for (const auto& item : pipes) {
                 if (item.second.isInRepair() == searchStatus) {
-                    selectedPipes[item.first] = item.second;
+                    selectedPipes.insert({ item.first,item.second });
                 }
             }
         }
