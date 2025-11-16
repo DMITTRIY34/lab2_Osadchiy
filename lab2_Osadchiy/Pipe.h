@@ -24,7 +24,7 @@ public:
     int getId() const { return id; }
     string getName() const { return name; }
     bool isInRepair() const { return inRepair; }
-
+    int getDiameter() const { return diameter; }
     // Сеттеры
     void setRepair(bool repair) { inRepair = repair; }
 

@@ -7,10 +7,11 @@
 #include "Ks.h"
 #include "Utils.h"
 #include <unordered_map>
+#include "GasNetwork.h"
 
 using namespace std;
 
-void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
+void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwork& network) {
     int number;
     while (true)
     {
@@ -25,10 +26,14 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
         cout << "9. Удалить объект" << endl;
         cout << "10. Сохранить в файл" << endl;
         cout << "11. Загрузить из файла" << endl;
+        cout << "12. Соединить КС с трубой" << endl;
+        cout << "13. Просмотр всех соединений" << endl;
+        cout << "14. Топологическая сортировка" << endl;
+        cout << "15. Удалить соединение" << endl;
         cout << "0. Выход" << endl;
         cout << "Выберите действие: ";
 
-        number = GetNumber(0,11);
+        number = GetNumber(0,15);
         cout << endl;
         switch (number) {
         case 1:
@@ -73,17 +78,47 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
         }
         case 9:
         {
-            deleteObject(pipes, kss);
+            deleteObject(pipes, kss, network);
             break;
         }
         case 10:
         {
-            saveToFile(pipes, kss);
+            saveToFile(pipes, kss, network);
             break;
         }
         case 11:
         {
-            loadFromFile(pipes, kss);
+            loadFromFile(pipes, kss, network);
+            break;
+        }
+        case 12:
+        {
+            cout << "Введите ID КС входа: ";
+            int startKS = GetNumber<int>(0);
+            cout << "Введите ID КС выхода: ";
+            int endKS = GetNumber(0);
+            cout << "Введите диаметр трубы (500, 700, 1000, 1400): ";
+            int diameter = GetNumber(0);
+
+            network.connectKS(pipes, kss, startKS, endKS, diameter);
+            break;
+        }
+        case 13:
+        {
+            network.showAllConnections();
+            break;
+        }
+        case 14:
+        {
+            network.showTopologicalOrder(kss);
+            break;
+        }
+        case 15:
+        {
+            cout << "-------------УДАЛЕНИЕ СОЕДИНЕНИЯ-------------" << endl;
+            cout << "Введите ID соединения для удаления: ";
+            int connId = GetNumber(0);
+            network.disconnect(connId);
             break;
         }
         case 0:
@@ -111,7 +146,8 @@ int main()
 
     unordered_map<int,Pipe> pipes;
     unordered_map<int, KS> kss;
+    GasNetwork network;
 
-    menu(pipes, kss);
+    menu(pipes, kss, network);
     return 0;
 }

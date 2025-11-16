@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 #include "Logger.h"
-
+#include "GasNetwork.h"
 
 
 using namespace std;
@@ -31,7 +31,7 @@ string GetName()
     return string();
 }
 
-void saveToFile(const unordered_map<int, Pipe>& pipes, const unordered_map<int, KS>& kss) {
+void saveToFile(const unordered_map<int, Pipe>& pipes, const unordered_map<int, KS>& kss, const GasNetwork& network) {
     cout << "Введите имя файла для сохранения: ";
     string filename = GetName();
 
@@ -53,11 +53,21 @@ void saveToFile(const unordered_map<int, Pipe>& pipes, const unordered_map<int, 
         file << item.second;
     }
 
+    const auto& connections = network.getConnections();
+    file << connections.size() << endl;
+    for (const auto& item : connections) {
+        const Connection& conn = item.second;
+        file << conn.getId() << endl;
+        file << conn.getPipeId() << endl;
+        file << conn.getStartKS() << endl;
+        file << conn.getEndKS() << endl;
+    }
+
     file.close();
     cout << "Данные сохранены в файл: " << filename << endl;
 }
 
-void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
+void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwork& network) {
     cout << "Введите имя файла для загрузки: ";
     string filename = GetName();
 
@@ -93,6 +103,17 @@ void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
         kss.insert({ ks.getId(),ks });
     }
 
+    int connectionCount;
+    file >> connectionCount;
+    file.ignore();
+    for (int i = 0; i < connectionCount; i++) {
+        int connId, pipeId, startKS, endKS;
+        file >> connId >> pipeId >> startKS >> endKS;
+        file.ignore();
+
+        Connection conn(connId, pipeId, startKS, endKS);
+    }
+
     file.close();
 
     // Обновляем nextId
@@ -107,13 +128,14 @@ void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
     cout << "Данные загружены из файла: " << filename << endl;
 }
 
-void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) {
+void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwork& network) {
     cout << "Что вы хотите удалить?" << endl;
     cout << "1. Трубу" << endl;
     cout << "2. КС" << endl;
+    cout << "3. Соединение" << endl;
     cout << "Выберите вариант: ";
 
-    int choice = GetNumber<int>(1, 2);
+    int choice = GetNumber<int>(1, 3);
 
     switch (choice) {
     case 1: {
@@ -126,10 +148,18 @@ void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
         cout << "Доступные трубы:" << endl;
         for (const auto& item : pipes) {
             cout << "ID: " << item.first << " - " << item.second.getName() << endl;
+            if (network.isPipeConnected(item.first)) {
+                cout << "Данная труба включена в ГТС. Нельзя удалить!" << endl;
+            }
         }
 
         cout << "Введите ID трубы для удаления: ";
         int id = GetNumber<int>(0);
+
+        if (network.isPipeConnected(id)) {
+            cout << "Труба включена в сеть! Сначала удалите соединение!" << endl;
+            return;
+        }
 
         auto pipeIt = pipes.find(id);
         if (pipeIt != pipes.end()) {
@@ -152,10 +182,18 @@ void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
         cout << "Доступные КС:" << endl;
         for (const auto& item : kss) {
             cout << "ID: " << item.first << " - " << item.second.getName() << endl;
+            if (network.isKSConnected(item.first)) {
+                cout << "Данная КС включена в ГТС. Нельзя удалить!" << endl;
+            }
         }
 
         cout << "Введите ID КС для удаления: ";
         int id = GetNumber<int>(0);
+
+        if (network.isKSConnected(id)) {
+            cout << "КС включена в сеть! Сначала удалите соединение!" << endl;
+            return;
+        }
 
         auto ksIt = kss.find(id);
         if (ksIt != kss.end()) {
@@ -168,5 +206,20 @@ void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss) 
         break;
     }
 
+    case 3: {
+        if (network.getConnections().empty()) {
+            cout << "Нет доступных соединений для удаления!" << endl;
+            return;
+        }
+
+        cout << "Доступные соединения:" << endl;
+        network.showAllConnections();
+
+        cout << "Введите ID соединения для удаления: ";
+        int id = GetNumber<int>(0);
+
+        network.disconnect(id);
+        break;
+    }
     }
 }
