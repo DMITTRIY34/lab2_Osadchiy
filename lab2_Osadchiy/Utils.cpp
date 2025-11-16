@@ -223,3 +223,54 @@ void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, 
     }
     }
 }
+
+void showAvailableKS(const unordered_map<int, KS>& kss) {
+    if (kss.empty()) {
+        cout << "Íåò äîñòóïíûõ ÊÑ!" << endl;
+        return;
+    }
+
+    cout << "=== ÄÎÑÒÓÏÍÛÅ ÊÑ ===" << endl;
+    for (const auto& item : kss) {
+        cout << "ID: " << item.first << " - " << item.second.getName() << endl;
+    }
+    cout << "=====================" << endl;
+}
+
+void showAvailablePipes(const unordered_map<int, Pipe>& pipes, const GasNetwork& network) {
+    if (pipes.empty()) {
+        cout << "Íåò äîñòóïíûõ òðóá!" << endl;
+        return;
+    }
+
+    cout << "=== ÄÎÑÒÓÏÍÛÅ ÒÐÓÁÛ ===" << endl;
+    for (const auto& item : pipes) {
+        cout << "ID: " << item.first << " - " << item.second.getName()
+            << " (Äèàìåòð: " << item.second.getDiameter() << " ìì)";
+        if (network.isPipeConnected(item.first)) {
+            cout << " [ÇÀÍßÒÀ]";
+        }
+        else {
+            cout << " [ÑÂÎÁÎÄÍÀ]";
+        }
+        cout << endl;
+    }
+    cout << "=======================" << endl;
+}
+
+int getValidKSId(const unordered_map<int, KS>& kss, const string& prompt) {
+    int id;
+    while (true) {
+        cout << prompt;
+        id = GetNumber<int>(0);
+
+        if (kss.find(id) != kss.end()) {
+            return id;
+        }
+        else {
+            cout << "ÊÑ ñ ID " << id << " íå íàéäåíà! ";
+            showAvailableKS(kss);
+            cout << "Ïîæàëóéñòà, ââåäèòå êîððåêòíûé ID: ";
+        }
+    }
+}

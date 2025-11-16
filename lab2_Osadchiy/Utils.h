@@ -17,14 +17,11 @@ N GetNumber(const N left_border = 0, const N right_border = std::numeric_limits<
     while (true)
     {
         cin >> x;
-        cout << x;
         // Проверяем успешность ввода и что следующий символ - конец строки
         if (cin.good() && cin.peek() == '\n' && x >= left_border && x <= right_border)
         {
-            cin.clear();
             cin.ignore(1000, '\n'); // Очищаем буфер
             LOG(to_string(x));
-            
             return x;
         }
         else
@@ -47,3 +44,6 @@ void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, 
 // Функции для работы с объектами
 void deleteObject(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwork& network);
 
+void showAvailableKS(const unordered_map<int, KS>& kss);
+void showAvailablePipes(const unordered_map<int, Pipe>& pipes, const GasNetwork& network);
+int getValidKSId(const unordered_map<int, KS>& kss, const string& prompt);

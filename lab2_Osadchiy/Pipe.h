@@ -25,15 +25,19 @@ public:
     string getName() const { return name; }
     bool isInRepair() const { return inRepair; }
     int getDiameter() const { return diameter; }
+
     // Сеттеры
     void setRepair(bool repair) { inRepair = repair; }
+    void setDiameter(int diameterNew) { diameter = diameterNew; }
+    void setName(const string& newName) { name = newName; }
+    void setLength(double newLength) { length = newLength; }
 
 
     friend ostream& operator << (ostream& out, const Pipe& pipe);
     friend istream& operator >> (istream& in, Pipe& pipe);
     friend ofstream& operator << (ofstream& out, const Pipe& pipe);
     friend ifstream& operator >> (ifstream& in, Pipe& pipe);
-    
+ 
 };
 
 // Функции для работы с трубами

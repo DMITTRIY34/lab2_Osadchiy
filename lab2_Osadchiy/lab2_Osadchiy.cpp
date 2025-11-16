@@ -93,13 +93,22 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwo
         }
         case 12:
         {
-            cout << "Введите ID КС входа: ";
-            int startKS = GetNumber<int>(0);
-            cout << "Введите ID КС выхода: ";
-            int endKS = GetNumber(0);
+            cout << "=== СОЕДИНЕНИЕ КС ТРУБОЙ ===" << endl;
+            showAvailableKS(kss);
+
+            int startKS = getValidKSId(kss, "Введите ID КС входа: ");
+
+            int endKS;
+            while (true) {
+                endKS = getValidKSId(kss, "Введите ID КС выхода: ");
+                if (endKS != startKS) {
+                    break;
+                }
+                cout << "КС выхода не может совпадать с КС входа! ";
+            }
+
             cout << "Введите диаметр трубы (500, 700, 1000, 1400): ";
             int diameter = GetNumber(0);
-
             network.connectKS(pipes, kss, startKS, endKS, diameter);
             break;
         }
@@ -116,6 +125,7 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwo
         case 15:
         {
             cout << "-------------УДАЛЕНИЕ СОЕДИНЕНИЯ-------------" << endl;
+            network.showAllConnections();
             cout << "Введите ID соединения для удаления: ";
             int connId = GetNumber(0);
             network.disconnect(connId);

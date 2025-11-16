@@ -30,6 +30,8 @@ public:
 	void addConnection(const Connection& connection);
 	void clear();
 
+	bool connectionExists(int startKS, int endKS) const;
+
 	const unordered_map<int, Connection>& getConnections() const { return connections; }
 
 };
