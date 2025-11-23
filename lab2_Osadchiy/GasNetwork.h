@@ -19,6 +19,7 @@ public:
 	bool connectKS(unordered_map<int, Pipe>& pipes, const unordered_map<int, KS>& kss, int startKS, int endKS, int diameter);
 	void showAllConnections() const;
 	bool disconnect(int ConnectionId);
+	bool disconnectAll();
 
 	vector<int> topologicalSort(const unordered_map<int, KS>& kss) const;
 	void showTopologicalOrder(const unordered_map<int, KS>& kss) const;

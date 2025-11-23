@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 #include "Connection.h"
+#include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -101,13 +103,14 @@ int GasNetwork::findFreePipeByDiameter(const unordered_map<int, Pipe>& pipes, in
 	}
 
 	if (!diameterValid) {
-		std::cout << "Диаметр " << diameter << " не поддерживается! Используйте: 500, 700, 1000, 1400 мм" << std::endl;
+		cout << "Диаметр " << diameter << " не поддерживается! Используйте: 500, 700, 1000, 1400 мм" << endl;
 		return -1;
 	}
 
 	for (const auto& item : pipes) {
 		const Pipe& pipe = item.second;
 		if (pipe.getDiameter() == diameter && !isPipeConnected(pipe.getId()) && !pipe.isInRepair()) {
+			cout << "Выбрали трубу с id = " << pipe.getId() << endl;
 			return pipe.getId();
 		}
 	}
@@ -158,12 +161,147 @@ bool GasNetwork::isPipeConnected(int pipeId) const {
 }
 
 vector<int> GasNetwork::topologicalSort(const unordered_map<int, KS>& kss) const {
-	vector<int> sort1 = { 1,2,3 };
-	return sort1;
+	vector<int> res;
+	
+	if (connections.empty()) {
+		cout << "В сети нет соединений!" << endl;
+		for (const auto& ks : kss) {
+			res.push_back(ks.first);
+		}
+		return res;
+	}
+
+	// Строим списки смежности и считаем полустепени захода
+	unordered_map<int, vector<int>> adjList;
+	unordered_map<int, int> inDegree;
+
+	// Инициализируем наши словари для всех КС
+	for (const auto& ksPair : kss) {
+		int ksId = ksPair.first;
+		adjList[ksId] = vector<int>();
+		inDegree[ksId] = 0;
+	}
+
+	// Заполнение графа из соединений
+	for (const auto& connectionPair : connections) {
+		const Connection& conn = connectionPair.second;
+		int start = conn.getStartKS();
+		int end = conn.getEndKS();
+
+		// Добавляем направленное ребро start -> end
+		adjList[start].push_back(end);
+		inDegree[end]++;
+	}
+
+	// Алгоритм Кана (топологическая сортировка)
+	queue<int> q;
+
+	// Находим все вершины с нулевой полустепенью захода
+	for (const auto& degreePair : inDegree) {
+		if (degreePair.second == 0) {
+			q.push(degreePair.first);
+		}
+	}
+
+	// Обрабатываем вершины
+	while (!q.empty()) {
+		int current = q.front(); // фронт - получаем без удаления элемент, поп - удаляем первый в очереди, пуш - в конец добавляем
+		q.pop();
+		res.push_back(current);
+
+		// Уменьшаем полустепень захода для всех соседей
+		for (int neighbor : adjList[current]) {
+			inDegree[neighbor]--;
+			if (inDegree[neighbor] == 0) {
+				q.push(neighbor);
+			}
+		}
+	}
+	// Проверка на циклы
+	if (res.size() != kss.size()) {
+		cout << "Обнаружен цикл в газотранспортной сети! Топологическая сортировка невозможна." << endl;
+		return vector<int>(); // Возвращаем пустой вектор
+	}
+
+	return res;
 }
 
 void GasNetwork::showTopologicalOrder(const unordered_map<int, KS>& kss) const {
+	cout << "=== ТОПОЛОГИЧЕСКАЯ СОРТИРОВКА ГАЗОТРАНСПОРТНОЙ СЕТИ ===" << endl;
 
+	vector<int> order = topologicalSort(kss);
+
+	if (order.empty()) {
+		cout << "Невозможно выполнить топологическую сортировку из-за циклов в сети." << endl;
+		return;
+	}
+
+	cout << "КС в порядке топологической сортировки (от источников к стокам):" << endl;
+
+	for (size_t i = 0; i < order.size(); ++i) {
+		auto it = kss.find(order[i]);
+		if (it != kss.end()) {
+			cout << i + 1 << ". " << it->second.getName() << " (ID: " << order[i] << ")";
+
+			// Показываем информацию о соединениях для этой КС
+			bool hasOutgoing = false;
+			bool hasIncoming = false;
+
+			for (const auto& conn : connections) {
+				if (conn.second.getStartKS() == order[i]) {
+					hasOutgoing = true;
+				}
+				if (conn.second.getEndKS() == order[i]) {
+					hasIncoming = true;
+				}
+			}
+
+			if (!hasIncoming && hasOutgoing) {
+				cout << " [ИСТОЧНИК]";
+			}
+			else if (hasIncoming && !hasOutgoing) {
+				cout << " [СТОК]";
+			}
+			else if (!hasIncoming && !hasOutgoing) {
+				cout << " [ИЗОЛИРОВАНА]";
+			}
+
+			cout << endl;
+		}
+	}
+
+	// Дополнительная информация о сети
+	cout << "--- Статистика сети ---" << endl;
+	cout << "Всего КС: " << kss.size() << endl;
+	cout << "Всего соединений: " << connections.size() << endl;
+
+	// Находим источники и стоки
+	vector<int> sources, sinks;
+	for (const auto& ksPair : kss) {
+		int ksId = ksPair.first;
+		bool hasIncoming = false;
+		bool hasOutgoing = false;
+
+		for (const auto& conn : connections) {
+			if (conn.second.getStartKS() == ksId) hasOutgoing = true;
+			if (conn.second.getEndKS() == ksId) hasIncoming = true;
+		}
+
+		if (!hasIncoming && hasOutgoing) sources.push_back(ksId);
+		if (hasIncoming && !hasOutgoing) sinks.push_back(ksId);
+	}
+
+	if (!sources.empty()) {
+		cout << "Источники (КС без входящих соединений): ";
+		for (int src : sources) cout << src << " ";
+		cout << endl;
+	}
+
+	if (!sinks.empty()) {
+		cout << "Стоки (КС без исходящих соединений): ";
+		for (int sink : sinks) cout << sink << " ";
+		cout << endl;
+	}
 }
 
 void GasNetwork::addConnection(const Connection& connection) {
@@ -186,4 +324,31 @@ bool GasNetwork::connectionExists(int startKS, int endKS) const {
 		}
 	}
 	return false;
+}
+bool GasNetwork::disconnectAll() {
+	if (connections.empty()) {
+		cout << "В сети нет соединений для удаления!" << endl;
+		return false;
+	}
+
+	int connectionCount = connections.size();
+
+	cout << "=== УДАЛЕНИЕ ВСЕХ СОЕДИНЕНИЙ ===" << endl;
+	cout << "Количество соединений для удаления: " << connectionCount << endl;
+
+	// Запрашиваем подтверждение
+	cout << "Вы уверены, что хотите удалить ВСЕ " << connectionCount << " соединений?" << endl;
+	cout << "Это действие нельзя отменить! (1-да, 0-нет): ";
+	int confirm = GetNumber(0, 1);
+
+	if (confirm == 1) {
+		connections.clear();
+		cout << "Все " << connectionCount << " соединений успешно удалены!" << endl;
+		cout << "Сеть очищена." << endl;
+		return true;
+	}
+	else {
+		cout << "Удаление отменено. Соединения сохранены." << endl;
+		return false;
+	}
 }

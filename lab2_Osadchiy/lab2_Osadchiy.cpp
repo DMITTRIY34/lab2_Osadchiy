@@ -30,6 +30,7 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwo
         cout << "13. Просмотр всех соединений" << endl;
         cout << "14. Топологическая сортировка" << endl;
         cout << "15. Удалить соединение" << endl;
+        cout << "16. Удалить все соединения" << endl;
         cout << "0. Выход" << endl;
         cout << "Выберите действие: ";
 
@@ -129,6 +130,11 @@ void menu(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, GasNetwo
             cout << "Введите ID соединения для удаления: ";
             int connId = GetNumber(0);
             network.disconnect(connId);
+            break;
+        }
+        case 16:
+        {
+            network.disconnectAll();
             break;
         }
         case 0:
