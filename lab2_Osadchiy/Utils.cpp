@@ -104,7 +104,7 @@ void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, 
     }
 
     int connectionCount;
-    file >> connectionCount;
+    file >> connectionCount;    
     file.ignore();
     for (int i = 0; i < connectionCount; i++) {
         int connId, pipeId, startKS, endKS;
@@ -112,6 +112,7 @@ void loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KS>& kss, 
         file.ignore();
 
         Connection conn(connId, pipeId, startKS, endKS);
+        network.addConnection(conn);
     }
 
     file.close();
